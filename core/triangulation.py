@@ -47,10 +47,13 @@ def measure_triangle(image, points):
             ind = []
             for j in range(0, 3):
                 for k in range(0, len(points)):
-                    if abs(pt[j][0] - points[k][0]) < 1.0 and abs(pt[j][1] - points[k][1]) < 1.0:
+                    # ?
+                    if abs(pt[j][0] - points[k][0]) < 0.1 and abs(pt[j][1] - points[k][1]) < 0.1:
                         ind.append(k)
             if len(ind) == 3:
                 triangle.append((ind[0], ind[1], ind[2]))
+            else:
+                print('errors:', len(ind))
 
         pt = []
 
