@@ -78,7 +78,7 @@ def gen_face_area(points):
 def tran_src(src_img, src_points, dst_points, face_area=None):
     jaw = core.JAW_END
 
-    if not face_area:
+    if face_area is None:
         face_area = gen_face_area(src_points)
 
     dst_list = dst_points \
