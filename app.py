@@ -1,13 +1,10 @@
 # coding=utf-8
 import os
-
-import cv2
-import scipy.fftpack
-import numpy as np
+import pathlib
+import uuid
 
 # Flask utils
 from flask import Flask, request, render_template, send_file
-from werkzeug.utils import secure_filename
 from gevent.pywsgi import WSGIServer
 
 import core
@@ -15,12 +12,16 @@ import core
 
 # Define a flask app
 PORT = 5000
-HOST = '172.18.16.32'
-app = Flask(__name__)
+HOST = '172.16.68.107'
+app = Flask(__name__, static_folder='pic')
+
+
+def gen_uuid_hex():
+    return uuid.uuid4().hex
 
 
 def face_merge(src_fn, face_fn):
-    ofn = 'results/output.jpg'
+    ofn = f'results/{gen_uuid_hex()}.jpg'
     core.face_merge(src_img=src_fn,
                     dst_img=face_fn,
                     out_img=ofn,
@@ -44,14 +45,21 @@ def upload():
     if not file:
         return {'errors': 'upload file?'}, 400
     basepath = os.path.dirname(__file__)
-    relative_path = f'uploads/{secure_filename(file.filename)}'
+    relative_path = f'uploads/{gen_uuid_hex()}{pathlib.Path(file.filename).suffix}'
     fn = os.path.join(basepath, relative_path)
     file.save(fn)
     return {'filename': relative_path, 'url': f'http://{HOST}:{PORT}/{relative_path}'}
 
 
+@app.route('/uploads/<path:path>')
+def uploads_file(path):
+    basepath = os.path.dirname(__file__)
+    fn = os.path.join(basepath, 'uploads', path)
+    return send_file(fn)
+
+
 @app.route('/results/<path:path>')
-def files(path):
+def results_file(path):
     basepath = os.path.dirname(__file__)
     fn = os.path.join(basepath, 'results', path)
     return send_file(fn)

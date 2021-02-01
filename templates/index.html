@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片换脸</title>
+    <!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="app">
+    <div class="change-image">
+        <div class="change-image-left">
+            <img :src="source" width="413" height="650">
+        </div>
+        <div class="change-image-centent">
+            <img :src="imageUrl" width="413" height="650">
+        </div>
+        <div class="change-image-right">
+            <img src="http://172.16.0.195:8080/face/pic/right.jpg" width="413" height="650">
+        </div>
+    </div>
+    <!-- <div class="change-image-upload">
+        <label style="width: 500px;margin-top:10px">图片地址:</label><input style="width: 500px;margin-top:20px" disabled value="http://172.16.0.195:8080/face/pic/left.jpg" />
+        <label style="width: 500px;margin-top:10px">图片地址:</label><input style="width: 500px;margin-top:20px" disabled value="http://172.16.0.195:8080/face/pic/right.jpg" />
+    </div> -->
+    <div class="el-image-upload">
+        <el-upload
+  class="upload-demo" style="width: 420px;"
+  action="http://172.16.68.107:5000/files/" :auto-upload="autoUpload"
+  
+  
+  :limit="limits"
+  :on-success="imageSuccess"
+  list-type="picture">
+  <el-button size="small" type="primary">点击上传</el-button>
+</el-upload>
+<el-button type="primary" size="small" @click="submit">点击更换</el-button>
+    </div>
+</div>
+</body> <script>
+    new Vue({
+      el: '#app',
+      data: function() {
+        return { 
+            fileList:[],
+            autoUpload:true,
+            limits:2,
+            images:'',
+            imageUrl:'pic/a.png',
+            source:'pic/left.jpg'
+         }
+      },
+      methods:{
+        imageSuccess:function(response, file, fileList)
+        {
+            //console.log(response.filename);
+            //this.array.push(response.filename);
+            this.images = response.filename;
+           this.source=' http://172.16.68.107:5000/uploads/0fbd2efa59c34fa6bcde8dc6293bc354.JPG'
+        },
+        submit:function()
+        {
+            let object = {};
+            object.src_image = this.images;
+            object.face_image = 'uploads/model.jpg';
+            let json = JSON.stringify(object);
+            axios.defaults.headers.post['Content-Type'] = 'application/json';
+            axios.post("http://172.16.68.107:5000/face-swap/",json).then(res => {
+                console.log(res)
+                this.imageUrl = res.data.image_url;
+                this.array = [];
+            })
+
+        }
+      }
+    })
+  </script>
+<style>
+    html
+    {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+    }
+    body
+    {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+    }
+    .change-image
+    {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-top: 50px;
+    }
+    .change-image-left
+    {
+        width: 430px;
+        height: 660px;
+        margin-right: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #aaaaaa;
+    }
+    .change-image-centent
+    {
+        width: 430px;
+        height: 660px;
+        margin-right: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #aaaaaa;
+    }
+    .change-image-right
+    {
+        width: 430px;
+        height: 660px;
+        margin-right: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #aaaaaa;
+    }
+    .change-image-upload
+    {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .el-image-upload
+    {
+        width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    }
+</style>
+</html>
