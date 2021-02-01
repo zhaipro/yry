@@ -29,9 +29,9 @@ def transformation_points(src_img, src_points, dst_img, dst_points):
     u, s, vt = np.linalg.svd(src_points.T * dst_points)
     r = (u * vt).T
 
-    m = np.vstack([np.hstack(((s2 / s1) * r, c2.T - (s2 / s1) * r * c1.T)), np.matrix([0., 0., 1.])])
+    m = np.hstack(((s2 / s1) * r, c2.T - (s2 / s1) * r * c1.T))
 
-    output = cv2.warpAffine(dst_img, m[:2],
+    output = cv2.warpAffine(dst_img, m,
                             (src_img.shape[1], src_img.shape[0]),
                             borderMode=cv2.BORDER_TRANSPARENT,
                             flags=cv2.WARP_INVERSE_MAP)
