@@ -21,7 +21,7 @@
             <img :src="imageUrl" width="413" height="650">
         </div>
         <div class="change-image-right">
-            <img src="http://172.16.0.195:8080/face/pic/right.jpg" width="413" height="650">
+            <img src="pic/right.jpg" width="413" height="650">
         </div>
     </div>
     <!-- <div class="change-image-upload">
@@ -31,7 +31,7 @@
     <div class="el-image-upload">
         <el-upload
   class="upload-demo" style="width: 420px;"
-  action="http://172.16.68.107:5000/files/" :auto-upload="autoUpload"
+  :action="uploadURL" :auto-upload="autoUpload"
   
   
   :limit="limits"
@@ -52,25 +52,30 @@
             limits:2,
             images:'',
             imageUrl:'pic/a.png',
-            source:'pic/left.jpg'
+            source:'pic/left.jpg',
+            uploadURL:'',
+            postURL:'',
          }
+      },
+      created:function() {
+          let host = window.location.host;
+          this.uploadURL="http://"+host+'/files/';
+          this.postURL = "http://"+host+'/face-swap/';
       },
       methods:{
         imageSuccess:function(response, file, fileList)
         {
-            //console.log(response.filename);
-            //this.array.push(response.filename);
             this.images = response.filename;
-           this.source=' http://172.16.68.107:5000/uploads/0fbd2efa59c34fa6bcde8dc6293bc354.JPG'
+           this.source=response.url;
         },
         submit:function()
         {
             let object = {};
-            object.src_image = this.images;
-            object.face_image = 'uploads/model.jpg';
+            object.src_image = 'uploads/model.jpg'
+            object.face_image = this.images;
             let json = JSON.stringify(object);
             axios.defaults.headers.post['Content-Type'] = 'application/json';
-            axios.post("http://172.16.68.107:5000/face-swap/",json).then(res => {
+            axios.post(this.postURL,json).then(res => {
                 console.log(res)
                 this.imageUrl = res.data.image_url;
                 this.array = [];
