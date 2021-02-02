@@ -66,8 +66,20 @@ def correct_color(img1, img2, landmark):
     return img2.astype(np.float64) * img1_blur.astype(np.float64) / img2_blur.astype(np.float64)
 
 
+def gen_face_area(points):
+    c = np.mean(points, axis=0)
+    points -= c
+    s = np.std(points)
+    s = s * 7.7
+    x, y = c
+    return int(x - s / 2), int(y - s / 2), int(s), int(s)
+
+
 def tran_src(src_img, src_points, dst_points, face_area=None):
     jaw = core.JAW_END
+
+    if not face_area:
+        face_area = gen_face_area(src_points)
 
     dst_list = dst_points \
                + core.matrix_rectangle(face_area[0], face_area[1], face_area[2], face_area[3]) \
