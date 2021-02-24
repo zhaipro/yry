@@ -11,3 +11,6 @@ yry（颜如玉）—— 一个实现人脸融合的算法，可以接近腾讯�
 
 ## 使用
 `python ModuleTest.py`
+
+## 文档
+![](./images/face_landmarks.jpg)
